@@ -30,56 +30,21 @@ class PostAPIController extends APIBaseController
      */
     public function store(Request $request)
     {
-        //metoda 1
-//        $input = $request->all();
-//        $validator = Validator::make($input, [
-//            'name' => 'required',
-//            'description' => 'required',
-//            'price' => 'required',
-//        ]);
-//        $file = $request->file('photo');
-//
-//        if($validator->fails()){
-//            return $this->sendError('Validation Error.', $validator->errors());
-//        }
-//
-//
-//        $product = Product::create($input);
-//        if(!empty($file)) {
-//            $imageName = time().'.'.$file->getClientOriginalExtension();
-//            $file->move(public_path('images'), $imageName);
-//            $data['photo'] = $imageName;
-//            $product->update($data);
-//        }
-
         //metoda 2
-        request()->validate([
-            'name' => 'required',
-            'description' => 'required',
-            'price' => 'required',
-        ]);
-        $file = $request->file('photo');
-        //dd($request->file('photo'));die;
-        if(!empty($file)) {
-            $imageName = time().'.'.$file->getClientOriginalExtension();
-            $file->move(public_path('images'), $imageName);
-        }
+        // $file = $request->file('photo');
+        // //dd($request->file('photo'));die;
+        // if(!empty($file)) {
+        //     $imageName = time().'.'.$file->getClientOriginalExtension();
+        //     $file->move(public_path('images'), $imageName);
+        // }
+        $input = json_decode($request->getContent(), true);
 
-        $product = new Product();
-        $product->name = $request->name;
-        $product->description = $request->description;
-        $product->price = $request->price;
- 
-        if(isset($imageName) && !empty($imageName)){
-            $product->photo = $imageName;
-        }
+        $post = new Post();
+        $post->title = $input['title'];
+        $post->body = $input['body'];
         
-        $product->save();
-        return response()->json([
-            'success' => true,
-            'message' => 'Product created successfully.',
-        ]);
-        //return $this->sendResponse($product->toArray(), 'Product created successfully.');
+        $post->save();
+        return $this->sendResponse($post->toArray(), 'Product created successfully.');
     }
 
     /**
@@ -90,14 +55,14 @@ class PostAPIController extends APIBaseController
      */
     public function show($id)
     {
-        $product= Product::find($id);
-        if (is_null($product)) {
+        $post= Post::find($id);
+        if (is_null($post)) {
             return $this->sendError('Product not found.');
         }
-        //return $this->sendResponse($product->toArray(), 'Product retrieved successfully.');
-        return response()->json([
-            $product->toArray()
-        ]);
+        return $this->sendResponse($post->toArray(), 'Product retrieved successfully.');
+        // return response()->json([
+        //     $post->toArray()
+        // ]);
     }
 
     /**
@@ -110,22 +75,14 @@ class PostAPIController extends APIBaseController
     public function update(Request $request, $id)
     {
         $input = $request->all();
-        $validator = Validator::make($input, [
-            'name' => 'required',
-            'description' => 'required',
-            'price' => 'required',
-        ]);
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());
-        }
-        $product= Product::find($id);
-        if (is_null($product)) {
+   
+        $post= Post::find($id);
+        if (is_null($post)) {
             return $this->sendError('Product not found.');
         }
-        $product->name = $input['name'];
-        $product->description = $input['description'];
-        $product->price = $input['price'];
-        $product->save();
+        $post->title = $input['title'];
+        $post->body = $input['body'];
+        $post->save();
         //return $this->sendResponse($product->toArray(), 'Product updated successfully.');
         return response()->json([
             'success' => true,
@@ -141,15 +98,15 @@ class PostAPIController extends APIBaseController
      */
     public function destroy($id)
     {
-        $product= Product::find($id);
-        if (is_null($product)) {
+        $post= Post::find($id);
+        if (is_null($post)) {
             return $this->sendError('Product not found.');
         }
 //        Product::where('id', $product->id)
 //            ->update([
 //                'is_delete'=>'0'
 //            ]);
-        Product::where('id', $product->id)
+        Post::where('id', $post->id)
             ->delete();
         return $this->sendResponse($id, 'Product deleted successfully.');
     }
