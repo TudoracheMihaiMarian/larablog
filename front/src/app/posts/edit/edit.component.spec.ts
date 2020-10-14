@@ -4,6 +4,9 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
 import { EditComponent } from './edit.component';
+import { PostService } from '../services/post.service';
+import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('EditComponent', () => {
   let component: EditComponent;
@@ -11,7 +14,9 @@ describe('EditComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EditComponent ]
+      declarations: [ EditComponent ],
+      imports: [HttpClientTestingModule, RouterTestingModule],
+      providers: [PostService]
     })
     .compileComponents();
   }));
